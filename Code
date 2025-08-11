@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Single File Image Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .filters {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filters button {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: #333;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    .filters button:hover {
+      background: #555;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .image {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .image:hover img {
+      transform: scale(1.1);
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .lightbox-img {
+      max-width: 90%;
+      max-height: 80vh;
+      margin-bottom: 20px;
+    }
+
+    .lightbox .close {
+      position: absolute;
+      top: 20px; right: 30px;
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      width: 100px;
+    }
+
+    .nav span {
+      font-size: 40px;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    @media (max-width: 600px) {
+      .nav span {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Image Gallery</h1>
+
+  <div class="filters">
+    <button data-filter="all">All</button>
+    <button data-filter="nature">Nature</button>
+    <button data-filter="architecture">Architecture</button>
+    <button data-filter="animals">Animals</button>
+  </div>
+
+  <div class="gallery">
+    <div class="image nature"><img src="https://picsum.photos/id/1015/400/300" alt="Nature 1" /></div>
+    <div class="image architecture"><img src="https://picsum.photos/id/1025/400/300" alt="Architecture 1" /></div>
+    <div class="image animals"><img src="https://picsum.photos/id/237/400/300" alt="Animal 1" /></div>
+    <div class="image architecture"><img src="https://picsum.photos/id/1031/400/300" alt="Architecture 2" /></div>
+    <div class="image animals"><img src="https://picsum.photos/id/1024/400/300" alt="Animal 2" /></div>
+
+
+  </div>
+
+  <div id="lightbox" class="lightbox">
+    <span class="close">&times;</span>
+    <img class="lightbox-img" src="" alt="Lightbox Image" />
+    <div class="nav">
+      <span class="prev">&#10094;</span>
+      <span class="next">&#10095;</span>
+    </div>
+  </div>
+
+  <script>
+    const images = document.querySelectorAll('.gallery .image img');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.querySelector('.lightbox-img');
+    const closeBtn = document.querySelector('.close');
+    const nextBtn = document.querySelector('.next');
+    const prevBtn = document.querySelector('.prev');
+    const filterButtons = document.querySelectorAll('.filters button');
+
+    let currentIndex = 0;
+    let imageList = Array.from(images);
+
+    images.forEach((img, index) => {
+      img.addEventListener('click', () => {
+        currentIndex = index;
+        showLightbox(img.src);
+      });
+    });
+
+    function showLightbox(src) {
+      lightbox.style.display = 'flex';
+      lightboxImg.src = src;
+    }
+
+    closeBtn.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % imageList.length;
+      lightboxImg.src = imageList[currentIndex].src;
+    });
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+      lightboxImg.src = imageList[currentIndex].src;
+    });
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+        document.querySelectorAll('.gallery .image').forEach(img => {
+          if (filter === 'all' || img.classList.contains(filter)) {
+            img.style.display = 'block';
+          } else {
+            img.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
